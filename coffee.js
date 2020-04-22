@@ -60,5 +60,69 @@ function takeCoffee() {
 function changeDisplayText(text) {
   let displayText = document.querySelector('.display-text');
   displayText.innerHTML = text;
+}
+
+//-------------------купюры-------------------------------
+let bills = document.querySelectorAll('.bills img');
+
+for (let i = 0; i < bills.length; i++) {
+  bills[i].onmousedown = takeMoney;
+  /*bills[i].onmousedown = function (event) {
+    takeMoney(event);
+  }*/
+}
+
+function takeMoney(event) {
+  event.preventDefault();
+  let bill = event.target;
+
+  bill.style.position = "absolute";
+  bill.style.transform = "rotate(90deg)";
+  bill.style.margin = 0;
+  
+  let billCoords = bill.getBoundingClientRect();
+  let billWidth = billCoords.width;
+  let billHeight = billCoords.height; //console.log(event.clientX, event.clientY);
+  
+  bill.style.top = event.clientY - billWidth/2 + "px";
+  bill.style.left = event.clientX - billHeight/2 + "px";
+  
+  window.onmousemove = function(event) {
+    bill.style.top = event.clientY - billWidth/2 + "px";
+    bill.style.left = event.clientX - billHeight/2 + "px";
+  }
+  
+  bill.onmouseup = function() {
+    window.onmousemove = null;
+    console.log( inAtm(bill) );
+  }
   
 }
+
+function inAtm(bill) {
+  let atm = document.querySelector('.atm img');
+  
+  let atmCoords = atm.getBoundingClientRect();
+  let billCoords = bill.getBoundingClientRect();
+  
+  let billLeftTopCorner = {"x" : billCoords.x, "y": billCoords.y};
+  let billRightTopCorner = {"x" : billCoords.x + billCoords.width, "y" : billCoords.y};
+  
+  let atmLeftTopCorner = {"x" :  atmCoords.x, "y" : atmCoords.y};
+  let atmRightTopCorner = {"x" :  atmCoords.x + atmCoords.width, "y" : atmCoords.y};
+  let atmLeftBottomTopCorner = {"x" :  atmCoords.x, "y" : atmCoords.y + atmCoords.height/3};
+  
+  if (billLeftTopCorner.x > atmLeftTopCorner.x
+    && billRightTopCorner.x < atmRightTopCorner.x
+    && billLeftTopCorner.y > atmLeftTopCorner.y
+    && billLeftTopCorner.y < atmLeftBottomTopCorner.y
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+  
+}
+
+
+
